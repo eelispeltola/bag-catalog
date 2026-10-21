@@ -1,0 +1,29 @@
+[project]
+name = "bag-catalog"
+dynamic = ["version"]
+description = "Browse rosbag2 recordings by sensor, start time, duration and route"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+# lz4 and zstandard read compressed MCAP chunks (for image resolutions)
+dependencies = ["PySide6>=6.7", "PyYAML", "numpy", "lz4", "zstandard"]
+
+[project.scripts]
+bag-catalog = "bag_catalog.app:main"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {attr = "bag_catalog.__version__"}
+
+[tool.setuptools.package-data]
+bag_catalog = ["resources/*.svg"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120

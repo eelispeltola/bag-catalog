@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Bag Catalog
+Comment=Browse rosbag2 recordings: sensors, start times, durations and routes
+Exec=@EXEC@
+Icon=bag-catalog
+Terminal=false
+Categories=Development;Science;
+StartupWMClass=bag-catalog

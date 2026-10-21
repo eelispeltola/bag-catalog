@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+"""Launcher: runs bag_catalog from this checkout, sourcing ROS 2 first if it isn't already.
+
+Symlink it onto PATH (install.sh does). Uses the system Python, which has PySide6 and,
+once ROS is sourced, rosbag2_py.
+"""
+import glob
+import importlib.util
+import os
+import shlex
+import sys
+
+if __name__ == "__main__":
+    me = os.path.realpath(__file__)
+    setups = sorted(glob.glob("/opt/ros/*/setup.bash"))
+    if setups and not importlib.util.find_spec("rosbag2_py") and not os.environ.get("BAG_CATALOG_ROS_SOURCED"):
+        os.environ["BAG_CATALOG_ROS_SOURCED"] = "1"  # don't loop if sourcing doesn't help
+        cmd = f'source {shlex.quote(setups[-1])} && exec {shlex.quote(sys.executable)} {shlex.quote(me)} "$@"'
+        os.execvp("bash", ["bash", "-c", cmd, "bag-catalog", *sys.argv[1:]])
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(me)), "src"))
+    from bag_catalog.app import main
+    sys.exit(main())

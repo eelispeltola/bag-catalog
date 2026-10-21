@@ -1,0 +1,54 @@
+# Example bag-catalog profile.
+#
+# Save it as bag_catalog.yaml in a bag folder to apply it to everyone who opens that
+# folder (or a folder inside it), or as ~/.config/bag-catalog/profile.yaml for yourself only.
+# Keep just the settings you need: anything left out keeps its built-in default from
+# src/bag_catalog/config.py. `bag-catalog --print-profile` prints every setting with the value in
+# effect. A list or mapping replaces the default one rather than adding to it, so repeat the
+# default entries you want to keep.
+
+# How topics are grouped into sensor columns.
+sensors:
+  # Topic name parts left out everywhere: /sensing/lidar/points -> lidar
+  ignored_segments: [driver, camera_driver, sensing]
+  # Renames sensors, as shown in the column headers. Topics that aren't cameras or lidars are
+  # grouped by their first name part, so this also merges topics: /tf_static into tf.
+  aliases:
+    tf_static: tf
+    front_bottom_camera: bottom_camera
+  # Message types whose topics belong to a camera; add custom compressed formats here.
+  # camera_types:
+  #   - sensor_msgs/msg/CompressedImage
+  #   - sensor_msgs/msg/Image
+  #   - sensor_msgs/msg/CameraInfo
+  #   - ffmpeg_image_transport_msgs/msg/FFMPEGPacket
+  #   - theora_image_transport/msg/Packet
+
+# The camera frame shown for a recording.
+thumbnails:
+  # Sensor names (after the renames above) in order of preference; the first one a recording has
+  # images from is used.
+  cameras:
+    - front_camera
+    - narrow_stereo_camera/left
+    - narrow_stereo_camera/right
+    - bottom_camera
+  # Take the first frame this many seconds in, to skip auto-exposure warm-up.
+  offset_s: 2.0
+
+# Where the route and distance come from: GNSS if a recording has it, else odometry.
+routes:
+  # Custom types work if they have latitude, longitude and status.status, like NavSatFix.
+  gnss_types:
+    - sensor_msgs/msg/NavSatFix
+    # - my_robot_msgs/msg/GnssFix
+
+# A gap is a pause in a topic longer than both factor x its usual interval and min_s.
+gaps:
+  factor: 4.0
+  min_s: 0.5
+
+# Background map for GNSS routes. Respect the tile server's usage policy.
+map:
+  tile_url: https://tile.opentopomap.org/{z}/{x}/{y}.png
+  attribution: © OpenStreetMap contributors, SRTM · © OpenTopoMap
